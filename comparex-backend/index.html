@@ -1744,33 +1744,21 @@ function renderOrders(){
 }
 
 // ==================== AUTH ====================
-async function doLogin(){
+function doLogin(){
   const email=document.getElementById('loginEmail').value;
   const pass=document.getElementById('loginPass').value;
   if(!email||!pass){showToast('Please fill all fields','error');return;}
-  try {
-    const res = await API.auth.login(email, pass);
-    localStorage.setItem('token', res.token);
-    showToast('Welcome back! 👋','success');
-    showPage('home');
-  } catch (err) {
-    showToast('Login failed: ' + err.message, 'error');
-  }
+  showToast('Welcome back! 👋','success');
+  showPage('home');
 }
-async function doSignup(){
+function doSignup(){
   const name=document.getElementById('signupName').value;
   const email=document.getElementById('signupEmail').value;
   const pass=document.getElementById('signupPass').value;
   if(!name||!email||!pass){showToast('Please fill all fields','error');return;}
   if(pass.length<8){showToast('Password must be 8+ characters','error');return;}
-  try {
-    const res = await API.auth.signup(name, email, pass);
-    localStorage.setItem('token', res.token);
-    showToast('Account created! Welcome to CompareX 🎉','success');
-    showPage('home');
-  } catch (err) {
-    showToast('Signup failed: ' + err.message, 'error');
-  }
+  showToast('Account created! Welcome to CompareX 🎉','success');
+  showPage('home');
 }
 function togglePassword(id,btn){
   const inp=document.getElementById(id);
@@ -1817,46 +1805,7 @@ function renderAdminProducts(){
 }
 
 // ==================== INIT ====================
-const res = await API.auth.login("node utils/seeder.jsx@gmail.com", "123456");
-localStorage.setItem("token", res.token);
-const token = localStorage.getItem("token");
-await API.cart.add("product_id", token);
-const order = await API.orders.create("razorpay", token);
-
-API.payment.initRazorpay(
-  order.order._id,
-  (res) => {
-    alert("Payment Success");
-  },
-  () => {
-    alert("Payment Failed");
-  }
-);
-const adminRes = await API.admin.login("admin@comparex.com", "Admin@2025");
-localStorage.setItem("adminToken", adminRes.token);
-const token = localStorage.getItem("adminToken");
-await API.admin.addProduct(
-  {
-    title: "iPhone 15",
-    price: 70000,
-    category: "Mobile",
-    description: "Latest iPhone",
-  },
-  token
-);
-await API.admin.createCoupon(
-  {
-    code: "SAVE20",
-    discountType: "percentage",
-    discountValue: 20,
-  },
-  token
-);
-await API.admin.deleteProduct(productId, token);
-const data = await API.admin.getDashboard(token);
-console.log(data);
 showPage('home');
 </script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>
