@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CompareX — Compare Prices. Save Money.</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+/* ==================== DESIGN TOKENS ==================== */
+:root {
+  --bg: #090b10;
+  --surf: #0e1117;
+  --card: #131720;
+  --bdr: #1e2330;
+  --bdr2: #252c3d;
+  --acc: #00e5a0;
+  --acc2: #ff4d6d;
+  --acc3: #5b6cff;
+  --acc4: #fbbf24;
+  --txt: #e8ecf4;
+  --txt2: #8892a4;
+  --txt3: #5a6275;
+  --white: #fff;
+  --nav-h: 64px;
+  --bot-h: 64px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 4px 24px rgba(0,0,0,.4);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,.5);
+  --glow: 0 0 32px rgba(0,229,160,.15);
+}
+[data-theme="light"] {
+  --bg: #f0f2f7;
+  --surf: #f8f9fc;
+  --card: #ffffff;
+  --bdr: #e2e6f0;
+  --bdr2: #d4d9e8;
+  --txt: #0f1623;
+  --txt2: #5a6480;
+  --txt3: #8892a8;
+  --shadow: 0 4px 24px rgba(0,0,0,.08);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,.12);
+  --glow: 0 0 32px rgba(0,229,160,.1);
+}
+
+/* ==================== RESET ==================== */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Epilogue',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;transition:background .3s,color .3s;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{font-family:'Epilogue',sans-serif;cursor:pointer;border:none;outline:none}
+input,textarea,select{font-family:'Epilogue',sans-serif;outline:none}
+img{max-width:100%;display:block}
+ul{list-style:none}
+
+/* ==================== TYPOGRAPHY ==================== */
+.font-display{font-family:'Clash Display',sans-serif}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:4px}
+
+/* ==================== PAGE SYSTEM ==================== */
+.page{display:none;min-height:100vh;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ==================== DESKTOP NAVBAR ==================== */
+.desktop-nav{
+  display:none;position:fixed;top:0;left:0;right:0;z-index:900;
+  height:var(--nav-h);background:rgba(9,11,16,.88);
+  backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);
+  padding:0 2.5rem;align-items:center;justify-content:space-between;
+}
+[data-theme="light"] .desktop-nav{background:rgba(248,249,252,.92)}
+.d-logo{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.3rem;
+  background:linear-gradient(135deg,var(--acc),var(--acc3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  cursor:pointer}
+.d-nav-links{display:flex;gap:2rem;align-items:center}
+.d-nav-links a{font-size:.875rem;font-weight:500;color:var(--txt2);transition:color .2s}
+.d-nav-links a:hover,.d-nav-links a.active{color:var(--txt)}
+.d-nav-right{display:flex;gap:.75rem;align-items:center}
+.d-theme-btn{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--bdr);
+  color:var(--txt2);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.d-theme-btn:hover{border-color:var(--acc);color:var(--acc)}
+.d-theme-btn .material-icons-round{font-size:18px}
+.cart-badge{position:relative}
+.badge-dot{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;
+  background:var(--acc2);color:#fff;font-size:.6rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+
+/* ==================== MOBILE APPBAR ==================== */
+.mobile-appbar{
+  display:flex;position:fixed;top:0;left:0;right:0;z-index:900;
+  height:56px;background:var(--surf);border-bottom:1px solid var(--bdr);
+  padding:0 1rem;align-items:center;justify-content:space-between;
+}
+.m-logo{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.2rem;
+  background:linear-gradient(135deg,var(--acc),var(--acc3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.m-appbar-right{display:flex;gap:.5rem;align-items:center}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:transparent;color:var(--txt2);
+  display:flex;align-items:center;justify-content:center;transition:all .2s}
+.icon-btn:hover{background:var(--bdr);color:var(--txt)}
+.icon-btn .material-icons-round{font-size:20px}
+
+/* ==================== BOTTOM NAV ==================== */
+.bottom-nav{
+  display:flex;position:fixed;bottom:0;left:0;right:0;z-index:900;
+  height:var(--bot-h);background:var(--surf);border-top:1px solid var(--bdr);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;transition:all .2s;color:var(--txt3)}
+.bn-item.active{color:var(--acc)}
+.bn-item .material-icons-round{font-size:22px;transition:transform .2s}
+.bn-item.active .material-icons-round{transform:scale(1.1)}
+.bn-label{font-size:.6rem;font-weight:600;letter-spacing:.03em}
+.bn-cart{position:relative}
+
+/* ==================== CONTENT PADDING ==================== */
+.mobile-content{padding-top:56px;padding-bottom:calc(var(--bot-h) + 16px)}
+.desktop-content{padding-top:calc(var(--nav-h) + 0px)}
+
+/* ==================== BUTTONS ==================== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
+  padding:.7rem 1.4rem;border-radius:var(--radius-sm);font-weight:600;font-size:.875rem;
+  cursor:pointer;transition:all .22s;border:none;letter-spacing:.01em}
+.btn-primary{background:linear-gradient(135deg,var(--acc),#00b87a);color:#0a1a12}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,229,160,.35)}
+.btn-secondary{background:var(--card);color:var(--txt);border:1px solid var(--bdr2)}
+.btn-secondary:hover{border-color:var(--acc);color:var(--acc)}
+.btn-danger{background:linear-gradient(135deg,var(--acc2),#e0325a);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--acc);color:var(--acc)}
+.btn-outline:hover{background:var(--acc);color:#0a1a12}
+.btn-lg{padding:.9rem 2rem;font-size:1rem;border-radius:var(--radius)}
+.btn-sm{padding:.45rem 1rem;font-size:.78rem;border-radius:8px}
+.btn-icon{width:40px;height:40px;padding:0;border-radius:50%}
+.btn-full{width:100%}
+
+/* ==================== INPUTS ==================== */
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;font-size:.8rem;font-weight:600;color:var(--txt2);margin-bottom:.45rem;letter-spacing:.04em;text-transform:uppercase}
+.form-input{width:100%;background:var(--card);border:1px solid var(--bdr2);color:var(--txt);
+  padding:.75rem 1rem;border-radius:var(--radius-sm);font-size:.9rem;transition:all .2s}
+.form-input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(0,229,160,.1)}
+.form-input::placeholder{color:var(--txt3)}
+.input-icon-wrap{position:relative}
+.input-icon-wrap .form-input{padding-left:2.75rem}
+.input-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);
+  color:var(--txt3);font-size:18px}
+.input-icon.material-icons-round{font-size:18px}
+.form-hint{font-size:.75rem;color:var(--txt3);margin-top:.35rem}
+.form-error{font-size:.75rem;color:var(--acc2);margin-top:.35rem}
+.password-wrap{position:relative}
+.password-toggle{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);
+  color:var(--txt3);cursor:pointer;background:none;border:none;display:flex}
+.password-toggle .material-icons-round{font-size:18px}
+
+/* ==================== CARDS ==================== */
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);
+  transition:border-color .2s,box-shadow .2s}
+.card:hover{border-color:var(--bdr2);box-shadow:var(--shadow)}
+.card-p{padding:1.5rem}
+
+/* ==================== CHIPS / PILLS ==================== */
+.chip{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .7rem;
+  border-radius:20px;font-size:.72rem;font-weight:600;letter-spacing:.03em}
+.chip-green{background:rgba(0,229,160,.12);color:var(--acc)}
+.chip-red{background:rgba(255,77,109,.12);color:var(--acc2)}
+.chip-blue{background:rgba(91,108,255,.12);color:var(--acc3)}
+.chip-yellow{background:rgba(251,191,36,.12);color:var(--acc4)}
+
+/* ==================== SECTION HEADERS ==================== */
+.sec-tag{font-size:.7rem;font-weight:700;color:var(--acc);text-transform:uppercase;
+  letter-spacing:.12em;margin-bottom:.5rem}
+.sec-title{font-family:'Clash Display',sans-serif;font-weight:700;
+  font-size:clamp(1.6rem,3.5vw,2.4rem);line-height:1.1;margin-bottom:.6rem}
+.sec-sub{color:var(--txt2);font-size:.95rem;line-height:1.7;font-weight:300;max-width:560px}
+
+/* ==================== TOAST ==================== */
+.toast-container{position:fixed;top:80px;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem}
+.toast{background:var(--card);border:1px solid var(--bdr2);border-radius:var(--radius-sm);
+  padding:.75rem 1.1rem;font-size:.82rem;font-weight:500;box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;gap:.6rem;min-width:220px;
+  animation:slideIn .3s ease;max-width:320px}
+.toast.success{border-left:3px solid var(--acc)}
+.toast.error{border-left:3px solid var(--acc2)}
+.toast.info{border-left:3px solid var(--acc3)}
+@keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(40px)}}
+
+/* ==================== MODAL ==================== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;
+  display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius) var(--radius) 0 0;
+  width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:var(--bdr2);border-radius:4px;margin:0 auto 1.25rem}
+.modal-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:1.25rem}
+
+/* ==================== DIVIDER ==================== */
+.divider{height:1px;background:var(--bdr);margin:1.25rem 0}
+.divider-text{display:flex;align-items:center;gap:1rem;color:var(--txt3);font-size:.8rem;margin:1.25rem 0}
+.divider-text::before,.divider-text::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+/* ==================== LANDING PAGE ==================== */
+.hero{min-height:calc(100vh - 56px);display:flex;flex-direction:column;
+  justify-content:center;padding:2rem 1.25rem;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);
+  width:600px;height:600px;background:radial-gradient(circle,rgba(0,229,160,.08) 0%,transparent 65%);
+  pointer-events:none;z-index:0}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,229,160,.1);
+  border:1px solid rgba(0,229,160,.2);color:var(--acc);font-size:.72rem;font-weight:700;
+  padding:.35rem .9rem;border-radius:20px;margin-bottom:1.75rem;letter-spacing:.06em;
+  text-transform:uppercase;animation:fu .5s ease both}
+.hero h1{font-family:'Clash Display',sans-serif;font-weight:700;
+  font-size:clamp(2.4rem,8vw,4rem);line-height:1.05;margin-bottom:1.25rem;
+  animation:fu .5s .08s ease both;position:relative;z-index:1}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--acc),var(--acc3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{color:var(--txt2);font-size:1rem;line-height:1.75;margin-bottom:2rem;
+  animation:fu .5s .16s ease both;font-weight:300;position:relative;z-index:1;max-width:420px;margin-left:auto;margin-right:auto}
+.hero-cta{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;animation:fu .5s .24s ease both;position:relative;z-index:1;margin-bottom:2.5rem}
+@keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:400px;margin:0 auto;
+  animation:fu .5s .32s ease both;position:relative;z-index:1}
+.stat-item{text-align:center}
+.stat-val{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.6rem;
+  background:linear-gradient(135deg,var(--txt),var(--txt2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-lbl{font-size:.68rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-top:.1rem}
+
+/* FEATURED PRODUCTS */
+.featured-scroll{display:flex;gap:1rem;overflow-x:auto;padding:.5rem .25rem 1rem;
+  scrollbar-width:none;scroll-snap-type:x mandatory}
+.featured-scroll::-webkit-scrollbar{display:none}
+.product-card{min-width:220px;max-width:220px;background:var(--card);border:1px solid var(--bdr);
+  border-radius:var(--radius);overflow:hidden;cursor:pointer;scroll-snap-align:start;
+  transition:all .25s;flex-shrink:0}
+.product-card:hover{transform:translateY(-4px);border-color:var(--bdr2);box-shadow:var(--shadow-lg)}
+.product-thumb{height:160px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--surf),var(--bdr));font-size:3.5rem;position:relative}
+.product-discount{position:absolute;top:.6rem;right:.6rem;background:var(--acc2);
+  color:#fff;font-size:.65rem;font-weight:700;padding:.2rem .5rem;border-radius:6px}
+.product-info{padding:1rem}
+.product-category{font-size:.68rem;color:var(--acc);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+.product-name{font-weight:600;font-size:.88rem;margin-bottom:.4rem;line-height:1.35;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.product-price{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.price-current{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.1rem;color:var(--acc)}
+.price-original{font-size:.78rem;color:var(--txt3);text-decoration:line-through}
+.product-rating{display:flex;align-items:center;gap:.25rem;font-size:.75rem;color:var(--txt2)}
+.stars{color:var(--acc4);letter-spacing:-1px}
+
+/* TESTIMONIALS */
+.testimonial-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);
+  padding:1.25rem;min-width:280px;scroll-snap-align:start;flex-shrink:0}
+.testimonial-text{font-size:.88rem;color:var(--txt2);line-height:1.65;margin-bottom:1rem;font-weight:300}
+.testimonial-author{display:flex;align-items:center;gap:.75rem}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;font-weight:700;font-family:'Clash Display',sans-serif}
+.avatar-name{font-size:.82rem;font-weight:600}
+.avatar-role{font-size:.7rem;color:var(--txt3)}
+
+/* FAQ */
+.faq-item{border-bottom:1px solid var(--bdr);overflow:hidden}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;
+  cursor:pointer;font-weight:500;font-size:.9rem;transition:color .2s}
+.faq-q:hover{color:var(--acc)}
+.faq-q .material-icons-round{transition:transform .3s;font-size:20px;color:var(--txt3)}
+.faq-item.open .faq-q .material-icons-round{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;
+  font-size:.85rem;color:var(--txt2);line-height:1.7;font-weight:300}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:1rem}
+
+/* FOOTER */
+footer{background:var(--surf);border-top:1px solid var(--bdr);padding:2rem 1.25rem;text-align:center}
+.footer-logo{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.1rem;
+  background:linear-gradient(135deg,var(--acc),var(--acc3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem}
+.footer-text{font-size:.78rem;color:var(--txt3);line-height:1.65}
+.footer-links{display:flex;gap:1.25rem;justify-content:center;margin:1rem 0;flex-wrap:wrap}
+.footer-links a{font-size:.78rem;color:var(--txt2);transition:color .2s}
+.footer-links a:hover{color:var(--acc)}
+
+/* ==================== AUTH PAGES ==================== */
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:5rem 1.25rem 2rem}
+.auth-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);
+  padding:2rem 1.75rem;width:100%;max-width:420px}
+.auth-logo{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.5rem;
+  background:linear-gradient(135deg,var(--acc),var(--acc3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-align:center;margin-bottom:.5rem}
+.auth-tagline{text-align:center;color:var(--txt2);font-size:.85rem;margin-bottom:2rem;font-weight:300}
+.auth-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.5rem;margin-bottom:.3rem}
+.auth-sub{color:var(--txt2);font-size:.85rem;margin-bottom:1.75rem;font-weight:300}
+.social-btn{display:flex;align-items:center;justify-content:center;gap:.6rem;
+  width:100%;padding:.7rem;border-radius:var(--radius-sm);border:1px solid var(--bdr2);
+  background:var(--surf);color:var(--txt);font-size:.875rem;font-weight:500;
+  cursor:pointer;transition:all .2s;margin-bottom:.6rem}
+.social-btn:hover{border-color:var(--bdr2);background:var(--bdr)}
+.auth-switch{text-align:center;font-size:.82rem;color:var(--txt2);margin-top:1.25rem}
+.auth-switch a{color:var(--acc);font-weight:600;cursor:pointer}
+
+/* ==================== PRODUCTS PAGE ==================== */
+.products-header{padding:1.5rem 1.25rem 0}
+.search-bar{display:flex;align-items:center;gap:.75rem;background:var(--card);
+  border:1px solid var(--bdr2);border-radius:var(--radius-sm);padding:.7rem 1rem;margin-bottom:1rem}
+.search-bar input{flex:1;background:none;border:none;color:var(--txt);font-size:.88rem}
+.search-bar input::placeholder{color:var(--txt3)}
+.search-bar .material-icons-round{color:var(--txt3);font-size:20px}
+.filter-chips{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:none}
+.filter-chips::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;padding:.35rem .9rem;border-radius:20px;border:1px solid var(--bdr2);
+  font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;color:var(--txt2);background:var(--card)}
+.filter-chip.active{background:var(--acc);border-color:var(--acc);color:#0a1a12}
+.products-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;padding:1rem 1.25rem}
+.products-grid .product-card{min-width:unset;max-width:unset;width:100%}
+.product-card-actions{display:flex;gap:.5rem;margin-top:.75rem}
+.product-card-actions .btn{flex:1;font-size:.75rem;padding:.5rem}
+
+/* ==================== PRODUCT DETAIL ==================== */
+.product-detail-hero{background:linear-gradient(135deg,var(--card),var(--surf));
+  border-bottom:1px solid var(--bdr);padding:2rem 1.25rem;text-align:center;min-height:220px;
+  display:flex;align-items:center;justify-content:center;font-size:5rem}
+.product-detail-info{padding:1.25rem}
+.product-detail-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.35rem;margin-bottom:.5rem}
+.product-detail-meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.product-detail-price{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.75rem;color:var(--acc)}
+.product-detail-original{font-size:.9rem;color:var(--txt3);text-decoration:line-through}
+.feature-list{margin:1rem 0}
+.feature-item{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;font-size:.85rem;
+  border-bottom:1px solid var(--bdr)}
+.feature-item:last-child{border:none}
+.feature-item .material-icons-round{font-size:18px;color:var(--acc);flex-shrink:0}
+.related-scroll{display:flex;gap:.75rem;overflow-x:auto;padding:.5rem 1.25rem 1rem;scrollbar-width:none}
+.related-scroll::-webkit-scrollbar{display:none}
+
+/* ==================== CART ==================== */
+.cart-item{display:flex;gap:1rem;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--bdr)}
+.cart-thumb{width:64px;height:64px;border-radius:var(--radius-sm);background:var(--card);
+  border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0}
+.cart-item-info{flex:1;min-width:0}
+.cart-item-name{font-weight:600;font-size:.88rem;margin-bottom:.25rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-item-cat{font-size:.72rem;color:var(--txt3)}
+.cart-item-price{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1rem;color:var(--acc);margin-top:.25rem}
+.cart-item-remove{color:var(--acc2);cursor:pointer;flex-shrink:0}
+.cart-item-remove .material-icons-round{font-size:20px}
+.cart-summary{padding:1.25rem;background:var(--card);margin:1rem 1.25rem;border-radius:var(--radius);border:1px solid var(--bdr)}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;font-size:.88rem;border-bottom:1px solid var(--bdr)}
+.summary-row:last-child{border:none;font-weight:700;font-size:1rem;color:var(--acc);padding-top:.75rem}
+.coupon-input{display:flex;gap:.5rem;margin:1rem 1.25rem}
+.coupon-input input{flex:1;background:var(--card);border:1px solid var(--bdr2);color:var(--txt);
+  padding:.65rem 1rem;border-radius:var(--radius-sm);font-size:.85rem}
+.coupon-input input:focus{border-color:var(--acc)}
+.coupon-input input::placeholder{color:var(--txt3)}
+.cart-checkout-btn{padding:0 1.25rem 1.25rem}
+
+/* ==================== CHECKOUT ==================== */
+.checkout-section{padding:1.25rem}
+.checkout-section-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1rem;
+  margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.payment-methods{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem}
+.payment-method{display:flex;align-items:center;gap:.75rem;padding:.9rem 1rem;
+  background:var(--card);border:1px solid var(--bdr2);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s}
+.payment-method.selected{border-color:var(--acc);background:rgba(0,229,160,.05)}
+.payment-method-icon{font-size:1.5rem;width:40px;text-align:center}
+.payment-method-name{font-weight:600;font-size:.88rem}
+.payment-method-desc{font-size:.72rem;color:var(--txt3);margin-top:.1rem}
+.radio-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--bdr2);margin-left:auto;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.payment-method.selected .radio-dot{border-color:var(--acc)}
+.payment-method.selected .radio-dot::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--acc)}
+
+/* ==================== ORDERS ==================== */
+.order-card{margin:1rem 1.25rem;background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);overflow:hidden}
+.order-header{padding:1rem 1.25rem;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.order-id{font-size:.72rem;color:var(--txt3);font-family:monospace}
+.order-date{font-size:.72rem;color:var(--txt3)}
+.order-body{padding:1rem 1.25rem}
+.order-product{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.order-thumb{width:48px;height:48px;border-radius:8px;background:var(--surf);border:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.order-product-name{font-weight:600;font-size:.85rem}
+.order-product-price{font-size:.78rem;color:var(--txt2)}
+.order-footer{padding:.75rem 1.25rem;border-top:1px solid var(--bdr);display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+
+/* ==================== PROFILE ==================== */
+.profile-header{background:linear-gradient(135deg,rgba(0,229,160,.1),rgba(91,108,255,.08));
+  border-bottom:1px solid var(--bdr);padding:2rem 1.25rem;text-align:center}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc3));
+  display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;
+  font-family:'Clash Display',sans-serif;color:#0a1a12;margin:0 auto 1rem}
+.profile-name{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.3rem}
+.profile-email{font-size:.82rem;color:var(--txt2);margin-top:.25rem}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:1.25rem 1.25rem 0}
+.profile-stat{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius-sm);
+  padding:.9rem;text-align:center}
+.profile-stat-val{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.3rem;color:var(--acc)}
+.profile-stat-lbl{font-size:.65rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.04em;margin-top:.2rem}
+.menu-list{margin:1rem 1.25rem}
+.menu-item{display:flex;align-items:center;gap:.9rem;padding:1rem;border-bottom:1px solid var(--bdr);cursor:pointer;transition:background .2s;border-radius:var(--radius-sm)}
+.menu-item:hover{background:var(--bdr)}
+.menu-item .material-icons-round{font-size:20px;color:var(--acc3)}
+.menu-item-text{flex:1;font-size:.88rem;font-weight:500}
+.menu-item-arrow{color:var(--txt3);font-size:16px}
+.menu-item.danger .material-icons-round{color:var(--acc2)}
+.menu-item.danger .menu-item-text{color:var(--acc2)}
+
+/* ==================== DESKTOP OVERRIDES ==================== */
+@media(min-width:768px){
+  .desktop-nav{display:flex}
+  .mobile-appbar{display:none}
+  .bottom-nav{display:none}
+  .mobile-content{padding-top:0}
+  .desktop-content{padding-top:var(--nav-h)}
+  .hero{padding:3rem 4rem;text-align:left}
+  .hero::before{left:60%;top:-150px}
+  .hero h1{font-size:clamp(2.8rem,4vw,4.5rem)}
+  .hero-sub{margin-left:0;margin-right:0}
+  .hero-cta{justify-content:flex-start}
+  .hero-stats{margin:0;max-width:440px}
+  .featured-scroll{padding:1rem 2.5rem 1.5rem}
+  .products-grid{grid-template-columns:repeat(3,1fr);padding:1.5rem 2.5rem;gap:1.25rem}
+  .products-header{padding:2rem 2.5rem 0}
+  .product-card{min-width:unset}
+  footer{padding:3rem 2.5rem}
+  .footer-content{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2rem;text-align:left;margin-bottom:2rem}
+  .footer-links{justify-content:flex-start}
+  .auth-page{padding-top:var(--nav-h)}
+  .landing-sections{max-width:1240px;margin:0 auto;padding:0 2.5rem}
+}
+@media(min-width:1024px){
+  .products-grid{grid-template-columns:repeat(4,1fr)}
+}
+
+/* ==================== ADMIN ==================== */
+.admin-layout{display:flex;min-height:100vh}
+.admin-sidebar{width:240px;background:var(--surf);border-right:1px solid var(--bdr);
+  position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:200;transition:transform .3s}
+.admin-sidebar-logo{padding:1.25rem 1.5rem;border-bottom:1px solid var(--bdr)}
+.admin-sidebar-logo span{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.1rem;
+  background:linear-gradient(135deg,var(--acc),var(--acc3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.admin-sidebar-logo small{display:block;font-size:.68rem;color:var(--txt3);margin-top:.1rem}
+.admin-nav{padding:.75rem 0}
+.admin-nav-section{padding:.5rem 1.5rem;font-size:.65rem;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:.25rem}
+.admin-nav-item{display:flex;align-items:center;gap:.75rem;padding:.65rem 1.5rem;
+  cursor:pointer;transition:all .2s;color:var(--txt2);font-size:.85rem;font-weight:500}
+.admin-nav-item:hover{background:var(--bdr);color:var(--txt)}
+.admin-nav-item.active{background:rgba(0,229,160,.08);color:var(--acc);border-right:2px solid var(--acc)}
+.admin-nav-item .material-icons-round{font-size:18px}
+.admin-main{margin-left:240px;flex:1;min-height:100vh;background:var(--bg)}
+.admin-topbar{height:60px;border-bottom:1px solid var(--bdr);background:var(--surf);
+  display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:100}
+.admin-topbar-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1rem}
+.admin-content{padding:2rem}
+.admin-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin-bottom:2rem}
+.admin-stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);padding:1.4rem;position:relative;overflow:hidden}
+.admin-stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.admin-stat-card:nth-child(1)::before{background:linear-gradient(90deg,var(--acc),#00b87a)}
+.admin-stat-card:nth-child(2)::before{background:linear-gradient(90deg,var(--acc3),#4a5bd4)}
+.admin-stat-card:nth-child(3)::before{background:linear-gradient(90deg,var(--acc4),#f59e0b)}
+.admin-stat-card:nth-child(4)::before{background:linear-gradient(90deg,var(--acc2),#e0325a)}
+.admin-stat-icon{width:40px;height:40px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;margin-bottom:.9rem;font-size:18px}
+.admin-stat-val{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.75rem;margin-bottom:.25rem}
+.admin-stat-lbl{font-size:.78rem;color:var(--txt2)}
+.admin-stat-change{font-size:.72rem;margin-top:.4rem}
+.admin-table-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem}
+.admin-table-header{padding:1.1rem 1.5rem;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.admin-table-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:.95rem}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:.7rem 1.5rem;font-size:.7rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;font-weight:600;border-bottom:1px solid var(--bdr);background:rgba(255,255,255,.015)}
+td{padding:.8rem 1.5rem;font-size:.83rem;border-bottom:1px solid rgba(30,35,48,.7)}
+tr:last-child td{border:none}
+tr:hover td{background:rgba(0,229,160,.025)}
+.status-chip{display:inline-flex;padding:.2rem .6rem;border-radius:20px;font-size:.68rem;font-weight:700}
+.status-completed{background:rgba(0,229,160,.12);color:var(--acc)}
+.status-pending{background:rgba(251,191,36,.12);color:var(--acc4)}
+.status-failed{background:rgba(255,77,109,.12);color:var(--acc2)}
+.admin-form-section{background:var(--card);border:1px solid var(--bdr);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.admin-form-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:1.25rem}
+.admin-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.file-upload{border:2px dashed var(--bdr2);border-radius:var(--radius-sm);padding:2rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:1rem}
+.file-upload:hover{border-color:var(--acc);background:rgba(0,229,160,.03)}
+.file-upload .material-icons-round{font-size:36px;color:var(--txt3);margin-bottom:.5rem}
+.file-upload-text{font-size:.85rem;color:var(--txt2)}
+.file-upload-hint{font-size:.72rem;color:var(--txt3);margin-top:.25rem}
+@media(max-width:900px){
+  .admin-sidebar{transform:translateX(-100%)}
+  .admin-sidebar.open{transform:translateX(0)}
+  .admin-main{margin-left:0}
+  .admin-grid-2{grid-template-columns:1fr}
+}
+.admin-page{display:none}
+.admin-page.active{display:block}
+
+/* ==================== DESKTOP PRODUCT DETAIL ==================== */
+@media(min-width:768px){
+  .product-detail-layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;padding:2.5rem 2.5rem}
+  .product-detail-hero{border-radius:var(--radius);border:1px solid var(--bdr);font-size:7rem;min-height:340px}
+  .product-detail-info{padding:0}
+  .product-detail-title{font-size:1.75rem}
+}
+
+/* ==================== MISC ==================== */
+.empty-state{text-align:center;padding:4rem 2rem}
+.empty-icon{font-size:4rem;margin-bottom:1rem}
+.empty-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:.5rem}
+.empty-sub{color:var(--txt2);font-size:.88rem}
+.loading{display:flex;align-items:center;justify-content:center;padding:3rem}
+.spinner{width:32px;height:32px;border:3px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.section-pad{padding:2.5rem 1.25rem}
+.section-pad-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.view-all{font-size:.8rem;color:var(--acc);font-weight:600;cursor:pointer}
+.accent-text{color:var(--acc)}
+.muted{color:var(--txt2)}
+.small{font-size:.78rem}
+.text-center{text-align:center}
+.mt-1{margin-top:.5rem}.mt-2{margin-top:1rem}.mt-3{margin-top:1.5rem}.mb-1{margin-bottom:.5rem}.mb-2{margin-bottom:1rem}
+.flex{display:flex}.gap-1{gap:.5rem}.gap-2{gap:1rem}.items-center{align-items:center}
+.separator{height:8px;background:var(--bg);border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr)}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- DESKTOP NAVBAR -->
+<!-- ============================================================ -->
+<nav class="desktop-nav" id="desktopNav">
+  <div class="d-logo" onclick="showPage('home')">CompareX</div>
+  <div class="d-nav-links">
+    <a href="#" onclick="showPage('home')" id="dnav-home" class="active">Home</a>
+    <a href="#" onclick="showPage('products')" id="dnav-products">Products</a>
+    <a href="#" onclick="showPage('cart')" id="dnav-cart">Cart</a>
+    <a href="#" onclick="showPage('orders')" id="dnav-orders">My Orders</a>
+    <a href="#" onclick="showPage('admin')" id="dnav-admin">Admin</a>
+  </div>
+  <div class="d-nav-right">
+    <button class="d-theme-btn" onclick="toggleTheme()" title="Toggle theme">
+      <span class="material-icons-round" id="themeIcon">light_mode</span>
+    </button>
+    <button class="btn btn-secondary btn-sm cart-badge" onclick="showPage('cart')">
+      <span class="material-icons-round" style="font-size:16px">shopping_cart</span>
+      Cart
+      <span class="badge-dot" id="cartBadgeD">0</span>
+    </button>
+    <button class="btn btn-primary btn-sm" onclick="showPage('login')">Sign In</button>
+  </div>
+</nav>
+
+<!-- ============================================================ -->
+<!-- MOBILE APPBAR -->
+<!-- ============================================================ -->
+<div class="mobile-appbar">
+  <div class="m-logo">CompareX</div>
+  <div class="m-appbar-right">
+    <button class="icon-btn" onclick="toggleTheme()">
+      <span class="material-icons-round" id="mThemeIcon">light_mode</span>
+    </button>
+    <button class="icon-btn" onclick="showPage('cart')" style="position:relative">
+      <span class="material-icons-round">shopping_cart</span>
+      <span class="badge-dot" id="cartBadgeM">0</span>
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- BOTTOM NAV (Mobile) -->
+<!-- ============================================================ -->
+<nav class="bottom-nav">
+  <div class="bn-item active" id="bn-home" onclick="showPage('home')">
+    <span class="material-icons-round">home</span>
+    <span class="bn-label">Home</span>
+  </div>
+  <div class="bn-item" id="bn-products" onclick="showPage('products')">
+    <span class="material-icons-round">grid_view</span>
+    <span class="bn-label">Products</span>
+  </div>
+  <div class="bn-item bn-cart" id="bn-cart" onclick="showPage('cart')">
+    <span class="material-icons-round">shopping_cart</span>
+    <span class="bn-label">Cart</span>
+  </div>
+  <div class="bn-item" id="bn-profile" onclick="showPage('profile')">
+    <span class="material-icons-round">person</span>
+    <span class="bn-label">Profile</span>
+  </div>
+</nav>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============================================================
+     PAGE: HOME / LANDING
+     ============================================================ -->
+<div class="page active mobile-content desktop-content" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div style="position:relative;z-index:1">
+      <div class="hero-badge">🔥 500+ Digital Products</div>
+      <h1>Compare Prices.<br><em>Save Money.</em></h1>
+      <p class="hero-sub">Discover the best deals on digital products — courses, tools, templates, and more. All in one place.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary btn-lg" onclick="showPage('products')">
+          <span class="material-icons-round" style="font-size:18px">explore</span>
+          Explore Products
+        </button>
+        <button class="btn btn-secondary btn-lg" onclick="showPage('login')">Sign Up Free</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item"><div class="stat-val">500+</div><div class="stat-lbl">Products</div></div>
+        <div class="stat-item"><div class="stat-val">12K+</div><div class="stat-lbl">Customers</div></div>
+        <div class="stat-item"><div class="stat-val">4.9★</div><div class="stat-lbl">Rating</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="landing-sections">
+    <!-- FEATURED PRODUCTS -->
+    <div class="section-pad">
+      <div class="section-pad-title">
+        <div>
+          <div class="sec-tag">🔥 Hot Picks</div>
+          <h2 class="sec-title" style="font-size:1.4rem">Featured Products</h2>
+        </div>
+        <span class="view-all" onclick="showPage('products')">View all →</span>
+      </div>
+      <div class="featured-scroll" id="featuredProducts"></div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="section-pad" style="padding-top:0">
+      <div class="sec-tag">Browse By</div>
+      <h2 class="sec-title" style="font-size:1.4rem;margin-bottom:1rem">Categories</h2>
+      <div class="filter-chips" style="flex-wrap:wrap;gap:.5rem">
+        <div class="filter-chip active" onclick="filterCategory(this,'')">All</div>
+        <div class="filter-chip" onclick="filterCategory(this,'Course')">📚 Courses</div>
+        <div class="filter-chip" onclick="filterCategory(this,'Tool')">🛠 Tools</div>
+        <div class="filter-chip" onclick="filterCategory(this,'Template')">🎨 Templates</div>
+        <div class="filter-chip" onclick="filterCategory(this,'eBook')">📖 eBooks</div>
+        <div class="filter-chip" onclick="filterCategory(this,'Plugin')">⚡ Plugins</div>
+      </div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <div class="section-pad" style="padding-top:0">
+      <div class="sec-tag">Loved By Users</div>
+      <h2 class="sec-title" style="font-size:1.4rem;margin-bottom:1rem">What People Say</h2>
+      <div class="featured-scroll" id="testimonials"></div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section-pad" style="padding-top:0">
+      <div class="sec-tag">Got Questions?</div>
+      <h2 class="sec-title" style="font-size:1.4rem;margin-bottom:1rem">FAQ</h2>
+      <div id="faqList"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">CompareX</div>
+    <div class="footer-links">
+      <a href="#">About</a><a href="#">Privacy</a><a href="#">Terms</a>
+      <a href="#" onclick="showPage('contact')">Contact</a><a href="#">Refunds</a>
+    </div>
+    <div class="footer-text">© 2025 CompareX. All rights reserved. Compare Prices. Save Money.</div>
+  </footer>
+</div>
+
+<!-- ============================================================
+     PAGE: PRODUCTS
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-products">
+  <div class="products-header">
+    <h2 class="sec-title" style="font-size:1.3rem;margin-bottom:1rem">All Products</h2>
+    <div class="search-bar">
+      <span class="material-icons-round">search</span>
+      <input type="text" placeholder="Search products..." id="productSearch" oninput="filterProducts()">
+    </div>
+    <div class="filter-chips" id="categoryFilters">
+      <div class="filter-chip active" onclick="setCatFilter(this,'')">All</div>
+      <div class="filter-chip" onclick="setCatFilter(this,'Course')">📚 Courses</div>
+      <div class="filter-chip" onclick="setCatFilter(this,'Tool')">🛠 Tools</div>
+      <div class="filter-chip" onclick="setCatFilter(this,'Template')">🎨 Templates</div>
+      <div class="filter-chip" onclick="setCatFilter(this,'eBook')">📖 eBooks</div>
+      <div class="filter-chip" onclick="setCatFilter(this,'Plugin')">⚡ Plugins</div>
+    </div>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</div>
+
+<!-- ============================================================
+     PAGE: PRODUCT DETAIL
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-product-detail">
+  <div id="productDetailContent"></div>
+</div>
+
+<!-- ============================================================
+     PAGE: CART
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-cart">
+  <div style="padding:1.5rem 1.25rem 0">
+    <h2 class="sec-title" style="font-size:1.3rem">My Cart</h2>
+  </div>
+  <div id="cartContent"></div>
+</div>
+
+<!-- ============================================================
+     PAGE: CHECKOUT
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-checkout">
+  <div style="padding:1.5rem 1.25rem 0">
+    <h2 class="sec-title" style="font-size:1.3rem">Checkout</h2>
+  </div>
+
+  <div class="checkout-section">
+    <div class="checkout-section-title">
+      <span class="material-icons-round" style="color:var(--acc)">lock</span>
+      Secure Payment
+    </div>
+    <div class="payment-methods">
+      <div class="payment-method selected" onclick="selectPayment(this)">
+        <div class="payment-method-icon">💳</div>
+        <div><div class="payment-method-name">Razorpay</div><div class="payment-method-desc">Cards, UPI, Net Banking, Wallets</div></div>
+        <div class="radio-dot"></div>
+      </div>
+      <div class="payment-method" onclick="selectPayment(this)">
+        <div class="payment-method-icon">🌐</div>
+        <div><div class="payment-method-name">Stripe</div><div class="payment-method-desc">International Cards</div></div>
+        <div class="radio-dot"></div>
+      </div>
+      <div class="payment-method" onclick="selectPayment(this)">
+        <div class="payment-method-icon">🅿️</div>
+        <div><div class="payment-method-name">PayPal</div><div class="payment-method-desc">PayPal Balance & Cards</div></div>
+        <div class="radio-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="checkout-section">
+    <div class="checkout-section-title">
+      <span class="material-icons-round" style="color:var(--acc)">local_offer</span>
+      Coupon Code
+    </div>
+    <div style="display:flex;gap:.5rem">
+      <input class="form-input" id="couponInput" placeholder="Enter coupon code (e.g. SAVE20)" style="flex:1">
+      <button class="btn btn-outline" onclick="applyCoupon()">Apply</button>
+    </div>
+    <div class="form-hint" id="couponMsg"></div>
+  </div>
+
+  <div class="checkout-section">
+    <div class="checkout-section-title">
+      <span class="material-icons-round" style="color:var(--acc)">receipt_long</span>
+      Order Summary
+    </div>
+    <div id="checkoutSummary"></div>
+  </div>
+
+  <div style="padding:0 1.25rem 2rem">
+    <button class="btn btn-primary btn-full btn-lg" onclick="placeOrder()">
+      <span class="material-icons-round" style="font-size:18px">lock</span>
+      Pay Securely
+    </button>
+    <p style="text-align:center;font-size:.72rem;color:var(--txt3);margin-top:.75rem">🔒 256-bit SSL encrypted. Your data is safe.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: ORDERS
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-orders">
+  <div style="padding:1.5rem 1.25rem 0">
+    <h2 class="sec-title" style="font-size:1.3rem">My Orders</h2>
+    <p style="font-size:.82rem;color:var(--txt2);margin-bottom:1.5rem">Download your purchased products anytime</p>
+  </div>
+  <div id="ordersList"></div>
+</div>
+
+<!-- ============================================================
+     PAGE: LOGIN
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-login">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">CompareX</div>
+      <div class="auth-tagline">Compare Prices. Save Money.</div>
+      <h2 class="auth-title">Welcome back</h2>
+      <p class="auth-sub">Sign in to your account to continue</p>
+      <button class="social-btn">
+        <img src="https://www.google.com/favicon.ico" width="16" height="16" alt="G"> Continue with Google
+      </button>
+      <div class="divider-text">or continue with email</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div class="input-icon-wrap">
+          <span class="material-icons-round input-icon">mail</span>
+          <input class="form-input" type="email" id="loginEmail" placeholder="you@example.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="password-wrap">
+          <input class="form-input" type="password" id="loginPass" placeholder="Enter your password" style="padding-right:2.75rem">
+          <button class="password-toggle" onclick="togglePassword('loginPass',this)">
+            <span class="material-icons-round">visibility</span>
+          </button>
+        </div>
+        <div class="form-hint" style="text-align:right;cursor:pointer;color:var(--acc)" onclick="showPage('forgot')">Forgot password?</div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+      <div class="auth-switch">Don't have an account? <a onclick="showPage('signup')">Sign up</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: SIGNUP
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-signup">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">CompareX</div>
+      <div class="auth-tagline">Join thousands of smart shoppers</div>
+      <h2 class="auth-title">Create account</h2>
+      <p class="auth-sub">Start saving money today — it's free!</p>
+      <button class="social-btn">
+        <img src="https://www.google.com/favicon.ico" width="16" height="16" alt="G"> Sign up with Google
+      </button>
+      <div class="divider-text">or sign up with email</div>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <div class="input-icon-wrap">
+          <span class="material-icons-round input-icon">person</span>
+          <input class="form-input" type="text" id="signupName" placeholder="Your full name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div class="input-icon-wrap">
+          <span class="material-icons-round input-icon">mail</span>
+          <input class="form-input" type="email" id="signupEmail" placeholder="you@example.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="password-wrap">
+          <input class="form-input" type="password" id="signupPass" placeholder="Min 8 characters" style="padding-right:2.75rem">
+          <button class="password-toggle" onclick="togglePassword('signupPass',this)">
+            <span class="material-icons-round">visibility</span>
+          </button>
+        </div>
+        <div class="form-hint">Use at least 8 characters with a number</div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doSignup()">Create Account</button>
+      <div class="auth-switch">Already have an account? <a onclick="showPage('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: FORGOT PASSWORD
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-forgot">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">CompareX</div>
+      <h2 class="auth-title">Reset Password</h2>
+      <p class="auth-sub">Enter your email and we'll send you a reset link</p>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <div class="input-icon-wrap">
+          <span class="material-icons-round input-icon">mail</span>
+          <input class="form-input" type="email" placeholder="you@example.com">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="showToast('Reset link sent! Check your inbox.','success')">Send Reset Link</button>
+      <div class="auth-switch mt-2"><a onclick="showPage('login')">← Back to Sign In</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: PROFILE
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-profile">
+  <div class="profile-header">
+    <div class="profile-avatar">RK</div>
+    <div class="profile-name">Rahul Kumar</div>
+    <div class="profile-email">rahul@example.com</div>
+  </div>
+  <div class="profile-stats">
+    <div class="profile-stat"><div class="profile-stat-val">8</div><div class="profile-stat-lbl">Orders</div></div>
+    <div class="profile-stat"><div class="profile-stat-val">₹2.4K</div><div class="profile-stat-lbl">Spent</div></div>
+    <div class="profile-stat"><div class="profile-stat-val">12</div><div class="profile-stat-lbl">Products</div></div>
+  </div>
+  <div class="menu-list">
+    <div class="menu-item" onclick="showPage('orders')">
+      <span class="material-icons-round">receipt_long</span>
+      <span class="menu-item-text">My Orders & Downloads</span>
+      <span class="material-icons-round menu-item-arrow" style="font-size:18px">chevron_right</span>
+    </div>
+    <div class="menu-item" onclick="showPage('profile-edit')">
+      <span class="material-icons-round">edit</span>
+      <span class="menu-item-text">Edit Profile</span>
+      <span class="material-icons-round menu-item-arrow" style="font-size:18px">chevron_right</span>
+    </div>
+    <div class="menu-item" onclick="showPage('contact')">
+      <span class="material-icons-round">support_agent</span>
+      <span class="menu-item-text">Support & Help</span>
+      <span class="material-icons-round menu-item-arrow" style="font-size:18px">chevron_right</span>
+    </div>
+    <div class="menu-item">
+      <span class="material-icons-round">notifications</span>
+      <span class="menu-item-text">Notifications</span>
+      <span class="material-icons-round menu-item-arrow" style="font-size:18px">chevron_right</span>
+    </div>
+    <div class="menu-item" onclick="toggleTheme()">
+      <span class="material-icons-round">dark_mode</span>
+      <span class="menu-item-text">Toggle Dark/Light Mode</span>
+      <span class="material-icons-round menu-item-arrow" style="font-size:18px">chevron_right</span>
+    </div>
+    <div class="menu-item danger" onclick="showPage('login');showToast('Logged out successfully','info')">
+      <span class="material-icons-round">logout</span>
+      <span class="menu-item-text">Sign Out</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: PROFILE EDIT
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-profile-edit">
+  <div style="padding:1.5rem 1.25rem">
+    <button class="btn btn-secondary btn-sm mb-2" onclick="showPage('profile')">← Back</button>
+    <h2 class="sec-title" style="font-size:1.3rem;margin-bottom:1.5rem">Edit Profile</h2>
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input class="form-input" type="text" value="Rahul Kumar">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" value="rahul@example.com">
+    </div>
+    <div class="divider"></div>
+    <h3 style="font-size:.95rem;font-weight:600;margin-bottom:1rem">Change Password</h3>
+    <div class="form-group">
+      <label class="form-label">Current Password</label>
+      <input class="form-input" type="password" placeholder="Enter current password">
+    </div>
+    <div class="form-group">
+      <label class="form-label">New Password</label>
+      <input class="form-input" type="password" placeholder="Min 8 characters">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirm New Password</label>
+      <input class="form-input" type="password" placeholder="Repeat new password">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="showToast('Profile updated!','success')">Save Changes</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: CONTACT
+     ============================================================ -->
+<div class="page mobile-content desktop-content" id="page-contact">
+  <div style="padding:1.5rem 1.25rem">
+    <h2 class="sec-title" style="font-size:1.3rem;margin-bottom:.5rem">Contact Support</h2>
+    <p style="font-size:.85rem;color:var(--txt2);margin-bottom:1.5rem">We typically respond within 24 hours</p>
+    <div class="form-group">
+      <label class="form-label">Subject</label>
+      <input class="form-input" type="text" placeholder="What's this about?">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Message</label>
+      <textarea class="form-input" rows="5" placeholder="Describe your issue..." style="resize:vertical"></textarea>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="showToast('Message sent! We\'ll reply soon.','success')">Send Message</button>
+
+    <div class="card card-p mt-3">
+      <div style="font-size:.85rem;font-weight:600;margin-bottom:.75rem">Quick Help</div>
+      <div style="font-size:.82rem;color:var(--txt2);display:flex;flex-direction:column;gap:.75rem">
+        <div>📧 <strong>Email:</strong> support@comparex.io</div>
+        <div>⏰ <strong>Response Time:</strong> Within 24 hours</div>
+        <div>💬 <strong>Live Chat:</strong> Mon–Fri, 9am–6pm IST</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: ADMIN
+     ============================================================ -->
+<div class="page" id="page-admin" style="display:none">
+  <div class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-sidebar-logo">
+        <span>CompareX</span>
+        <small>Admin Dashboard</small>
+      </div>
+      <nav class="admin-nav">
+        <div class="admin-nav-section">Main</div>
+        <div class="admin-nav-item active" onclick="showAdminPage('dashboard',this)">
+          <span class="material-icons-round">dashboard</span>Dashboard
+        </div>
+        <div class="admin-nav-item" onclick="showAdminPage('products-mgmt',this)">
+          <span class="material-icons-round">inventory_2</span>Products
+        </div>
+        <div class="admin-nav-item" onclick="showAdminPage('orders-mgmt',this)">
+          <span class="material-icons-round">receipt_long</span>Orders
+        </div>
+        <div class="admin-nav-item" onclick="showAdminPage('users',this)">
+          <span class="material-icons-round">people</span>Users
+        </div>
+        <div class="admin-nav-section">Finance</div>
+        <div class="admin-nav-item" onclick="showAdminPage('coupons',this)">
+          <span class="material-icons-round">local_offer</span>Coupons
+        </div>
+        <div class="admin-nav-item" onclick="showAdminPage('reports',this)">
+          <span class="material-icons-round">bar_chart</span>Reports
+        </div>
+        <div class="admin-nav-section">Support</div>
+        <div class="admin-nav-item" onclick="showAdminPage('tickets',this)">
+          <span class="material-icons-round">support_agent</span>Tickets
+        </div>
+        <div class="admin-nav-item" onclick="showAdminPage('faq-mgmt',this)">
+          <span class="material-icons-round">help</span>FAQ
+        </div>
+        <div class="admin-nav-section">Config</div>
+        <div class="admin-nav-item" onclick="showAdminPage('settings',this)">
+          <span class="material-icons-round">settings</span>Settings
+        </div>
+        <div style="margin-top:auto;padding:1rem 1.5rem;border-top:1px solid var(--bdr);margin-top:2rem">
+          <div class="admin-nav-item" onclick="showPage('home')" style="padding:.5rem 0;border-radius:8px">
+            <span class="material-icons-round">arrow_back</span>Back to Site
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <div style="display:flex;align-items:center;gap:1rem">
+          <button class="icon-btn" onclick="document.getElementById('adminSidebar').classList.toggle('open')" style="display:block">
+            <span class="material-icons-round">menu</span>
+          </button>
+          <span class="admin-topbar-title" id="adminPageTitle">Dashboard</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <button class="d-theme-btn" onclick="toggleTheme()"><span class="material-icons-round" id="adminThemeIcon">light_mode</span></button>
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc3));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;font-family:'Clash Display',sans-serif;color:#0a1a12">SA</div>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="admin-page active admin-content" id="admin-dashboard">
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card">
+            <div class="admin-stat-icon" style="background:rgba(0,229,160,.1);color:var(--acc)"><span class="material-icons-round">payments</span></div>
+            <div class="admin-stat-val">₹1.84L</div>
+            <div class="admin-stat-lbl">Total Revenue</div>
+            <div class="admin-stat-change" style="color:var(--acc)">↑ 23.4% this month</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-icon" style="background:rgba(91,108,255,.1);color:var(--acc3)"><span class="material-icons-round">receipt_long</span></div>
+            <div class="admin-stat-val">342</div>
+            <div class="admin-stat-lbl">Total Orders</div>
+            <div class="admin-stat-change" style="color:var(--acc)">↑ 18.1% this month</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-icon" style="background:rgba(251,191,36,.1);color:var(--acc4)"><span class="material-icons-round">people</span></div>
+            <div class="admin-stat-val">1,247</div>
+            <div class="admin-stat-lbl">Registered Users</div>
+            <div class="admin-stat-change" style="color:var(--acc)">↑ 8.6% this month</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-icon" style="background:rgba(255,77,109,.1);color:var(--acc2)"><span class="material-icons-round">inventory_2</span></div>
+            <div class="admin-stat-val">54</div>
+            <div class="admin-stat-lbl">Active Products</div>
+            <div class="admin-stat-change" style="color:var(--acc2)">3 pending review</div>
+          </div>
+        </div>
+
+        <div class="admin-table-wrap">
+          <div class="admin-table-header">
+            <span class="admin-table-title">Recent Orders</span>
+            <button class="btn btn-secondary btn-sm">View All</button>
+          </div>
+          <table>
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:monospace">#CX-1089</td><td>Rahul Kumar</td><td>React Pro Course</td><td style="color:var(--acc);font-weight:600">₹2,499</td><td><span class="status-chip status-completed">Completed</span></td><td style="color:var(--txt3)">Jan 15</td></tr>
+              <tr><td style="font-family:monospace">#CX-1088</td><td>Priya Sharma</td><td>UI Design Kit</td><td style="color:var(--acc);font-weight:600">₹799</td><td><span class="status-chip status-completed">Completed</span></td><td style="color:var(--txt3)">Jan 15</td></tr>
+              <tr><td style="font-family:monospace">#CX-1087</td><td>Amit Verma</td><td>Python Bootcamp</td><td style="color:var(--acc);font-weight:600">₹1,999</td><td><span class="status-chip status-pending">Pending</span></td><td style="color:var(--txt3)">Jan 14</td></tr>
+              <tr><td style="font-family:monospace">#CX-1086</td><td>Sneha Patel</td><td>WordPress Plugin</td><td style="color:var(--acc);font-weight:600">₹499</td><td><span class="status-chip status-failed">Failed</span></td><td style="color:var(--txt3)">Jan 14</td></tr>
+              <tr><td style="font-family:monospace">#CX-1085</td><td>Dev Singh</td><td>SEO Masterclass</td><td style="color:var(--acc);font-weight:600">₹1,299</td><td><span class="status-chip status-completed">Completed</span></td><td style="color:var(--txt3)">Jan 13</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="admin-table-wrap">
+          <div class="admin-table-header">
+            <span class="admin-table-title">Top Products</span>
+          </div>
+          <table>
+            <thead><tr><th>#</th><th>Product</th><th>Category</th><th>Sales</th><th>Revenue</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--txt3)">1</td><td>React Pro Course</td><td><span class="chip chip-blue">Course</span></td><td>89</td><td style="color:var(--acc);font-weight:600">₹2.22L</td></tr>
+              <tr><td style="color:var(--txt3)">2</td><td>Python Bootcamp</td><td><span class="chip chip-blue">Course</span></td><td>67</td><td style="color:var(--acc);font-weight:600">₹1.34L</td></tr>
+              <tr><td style="color:var(--txt3)">3</td><td>UI Design Kit Pro</td><td><span class="chip chip-green">Template</span></td><td>54</td><td style="color:var(--acc);font-weight:600">₹43.2K</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRODUCTS MANAGEMENT -->
+      <div class="admin-page admin-content" id="admin-products-mgmt">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+          <h2 style="font-family:'Clash Display',sans-serif;font-weight:700">Products</h2>
+          <button class="btn btn-primary" onclick="showAdminPage('add-product',document.querySelector('.admin-nav-item'))">
+            <span class="material-icons-round" style="font-size:16px">add</span>Add Product
+          </button>
+        </div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-header">
+            <span class="admin-table-title">All Products (54)</span>
+            <input class="form-input" type="text" placeholder="Search..." style="width:200px;padding:.45rem .8rem;font-size:.8rem">
+          </div>
+          <table>
+            <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Sales</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="adminProductTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADD PRODUCT -->
+      <div class="admin-page admin-content" id="admin-add-product">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+          <button class="btn btn-secondary btn-sm" onclick="showAdminPage('products-mgmt')">← Back</button>
+          <h2 style="font-family:'Clash Display',sans-serif;font-weight:700">Add New Product</h2>
+        </div>
+        <div class="admin-form-section">
+          <div class="admin-form-title">Basic Information</div>
+          <div class="admin-grid-2">
+            <div class="form-group"><label class="form-label">Product Title</label><input class="form-input" placeholder="e.g. React Complete Course"></div>
+            <div class="form-group"><label class="form-label">Category</label><select class="form-input"><option>Course</option><option>Template</option><option>Tool</option><option>eBook</option><option>Plugin</option></select></div>
+          </div>
+          <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" rows="4" placeholder="Product description..."></textarea></div>
+          <div class="admin-grid-2">
+            <div class="form-group"><label class="form-label">Price (₹)</label><input class="form-input" type="number" placeholder="1999"></div>
+            <div class="form-group"><label class="form-label">Original Price (₹)</label><input class="form-input" type="number" placeholder="2999"></div>
+          </div>
+        </div>
+        <div class="admin-form-section">
+          <div class="admin-form-title">Digital File</div>
+          <div class="file-upload" onclick="showToast('File picker would open','info')">
+            <div class="material-icons-round">cloud_upload</div>
+            <div class="file-upload-text">Click to upload digital file</div>
+            <div class="file-upload-hint">ZIP, PDF, or any format · Max 2GB</div>
+          </div>
+        </div>
+        <div class="admin-form-section">
+          <div class="admin-form-title">Screenshots / Preview</div>
+          <div class="file-upload" onclick="showToast('Image picker would open','info')">
+            <div class="material-icons-round">add_photo_alternate</div>
+            <div class="file-upload-text">Upload screenshots or preview images</div>
+            <div class="file-upload-hint">JPG, PNG · Up to 5 images</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem">
+          <button class="btn btn-primary" onclick="showToast('Product saved!','success');showAdminPage('products-mgmt')">Save & Publish</button>
+          <button class="btn btn-secondary" onclick="showToast('Saved as draft','info')">Save Draft</button>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="admin-page admin-content" id="admin-users">
+        <div style="margin-bottom:1.5rem"><h2 style="font-family:'Clash Display',sans-serif;font-weight:700">Users</h2></div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-header"><span class="admin-table-title">All Users (1,247)</span></div>
+          <table>
+            <thead><tr><th>User</th><th>Email</th><th>Joined</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Rahul Kumar</strong></td><td style="color:var(--txt2)">rahul@example.com</td><td style="color:var(--txt3)">Dec 12</td><td>8</td><td><span class="status-chip status-completed">Active</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+              <tr><td><strong>Priya Sharma</strong></td><td style="color:var(--txt2)">priya@example.com</td><td style="color:var(--txt3)">Dec 8</td><td>3</td><td><span class="status-chip status-completed">Active</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+              <tr><td><strong>Amit Verma</strong></td><td style="color:var(--txt2)">amit@example.com</td><td style="color:var(--txt3)">Nov 30</td><td>1</td><td><span class="status-chip status-pending">Inactive</span></td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ORDERS MANAGEMENT -->
+      <div class="admin-page admin-content" id="admin-orders-mgmt">
+        <div style="margin-bottom:1.5rem"><h2 style="font-family:'Clash Display',sans-serif;font-weight:700">Orders</h2></div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-header"><span class="admin-table-title">All Orders (342)</span></div>
+          <table>
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Amount</th><th>Gateway</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:monospace">#CX-1089</td><td>Rahul Kumar</td><td>React Pro Course</td><td style="color:var(--acc)">₹2,499</td><td><span class="chip chip-green">Razorpay</span></td><td><span class="status-chip status-completed">Completed</span></td><td><button class="btn btn-sm btn-secondary">Details</button></td></tr>
+              <tr><td style="font-family:monospace">#CX-1088</td><td>Priya Sharma</td><td>UI Design Kit</td><td style="color:var(--acc)">₹799</td><td><span class="chip chip-blue">Stripe</span></td><td><span class="status-chip status-completed">Completed</span></td><td><button class="btn btn-sm btn-secondary">Details</button></td></tr>
+              <tr><td style="font-family:monospace">#CX-1087</td><td>Amit Verma</td><td>Python Bootcamp</td><td style="color:var(--acc)">₹1,999</td><td><span class="chip chip-yellow">PayPal</span></td><td><span class="status-chip status-pending">Pending</span></td><td><button class="btn btn-sm btn-secondary">Details</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COUPONS -->
+      <div class="admin-page admin-content" id="admin-coupons">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+          <h2 style="font-family:'Clash Display',sans-serif;font-weight:700">Coupons</h2>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Coupon created!','success')">
+            <span class="material-icons-round" style="font-size:14px">add</span>New Coupon
+          </button>
+        </div>
+        <div class="admin-form-section">
+          <div class="admin-form-title">Create New Coupon</div>
+          <div class="admin-grid-2">
+            <div class="form-group"><label class="form-label">Code</label><input class="form-input" placeholder="e.g. SAVE20"></div>
+            <div class="form-group"><label class="form-label">Type</label><select class="form-input"><option>Percentage (%)</option><option>Flat Amount (₹)</option></select></div>
+            <div class="form-group"><label class="form-label">Value</label><input class="form-input" type="number" placeholder="20"></div>
+            <div class="form-group"><label class="form-label">Usage Limit</label><input class="form-input" type="number" placeholder="100"></div>
+            <div class="form-group"><label class="form-label">Expiry Date</label><input class="form-input" type="date"></div>
+          </div>
+          <button class="btn btn-primary" onclick="showToast('Coupon created!','success')">Create Coupon</button>
+        </div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-header"><span class="admin-table-title">Active Coupons</span></div>
+          <table>
+            <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Used</th><th>Expiry</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:monospace;font-weight:700">SAVE20</td><td>Percentage</td><td style="color:var(--acc)">20%</td><td>45/100</td><td style="color:var(--txt3)">Feb 28</td><td><span class="status-chip status-completed">Active</span></td></tr>
+              <tr><td style="font-family:monospace;font-weight:700">FLAT100</td><td>Flat</td><td style="color:var(--acc)">₹100</td><td>12/50</td><td style="color:var(--txt3)">Jan 31</td><td><span class="status-chip status-completed">Active</span></td></tr>
+              <tr><td style="font-family:monospace;font-weight:700">NEWUSER</td><td>Percentage</td><td style="color:var(--acc)">30%</td><td>89/89</td><td style="color:var(--txt3)">Expired</td><td><span class="status-chip status-failed">Expired</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="admin-page admin-content" id="admin-reports">
+        <div style="margin-bottom:1.5rem"><h2 style="font-family:'Clash Display',sans-serif;font-weight:700">Reports & Analytics</h2></div>
+        <div class="admin-stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+          <div class="admin-stat-card"><div class="admin-stat-val" style="font-size:1.3rem">₹45,230</div><div class="admin-stat-lbl">This Month Revenue</div></div>
+          <div class="admin-stat-card"><div class="admin-stat-val" style="font-size:1.3rem">₹1.84L</div><div class="admin-stat-lbl">Total Revenue</div></div>
+          <div class="admin-stat-card"><div class="admin-stat-val" style="font-size:1.3rem">₹4,320</div><div class="admin-stat-lbl">GST Collected</div></div>
+          <div class="admin-stat-card"><div class="admin-stat-val" style="font-size:1.3rem">67</div><div class="admin-stat-lbl">This Month Orders</div></div>
+        </div>
+        <div class="admin-form-section">
+          <div class="admin-form-title">Monthly Revenue (Last 6 Months)</div>
+          <div style="display:flex;gap:.5rem;align-items:flex-end;height:120px;padding:.5rem 0">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.25rem">
+              <div style="flex:1;width:100%;background:linear-gradient(to top,var(--acc),var(--acc3));border-radius:4px 4px 0 0;height:45%"></div>
+              <div style="font-size:.65rem;color:var(--txt3)">Aug</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.25rem">
+              <div style="flex:1;width:100%;background:linear-gradient(to top,var(--acc),var(--acc3));border-radius:4px 4px 0 0;height:60%"></div>
+              <div style="font-size:.65rem;color:var(--txt3)">Sep</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.25rem">
+              <div style="flex:1;width:100%;background:linear-gradient(to top,var(--acc),var(--acc3));border-radius:4px 4px 0 0;height:55%"></div>
+              <div style="font-size:.65rem;color:var(--txt3)">Oct</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.25rem">
+              <div style="flex:1;width:100%;background:linear-gradient(to top,var(--acc),var(--acc3));border-radius:4px 4px 0 0;height:75%"></div>
+              <div style="font-size:.65rem;color:var(--txt3)">Nov</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.25rem">
+              <div style="flex:1;width:100%;background:linear-gradient(to top,var(--acc),var(--acc3));border-radius:4px 4px 0 0;height:90%"></div>
+              <div style="font-size:.65rem;color:var(--txt3)">Dec</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.25rem">
+              <div style="flex:1;width:100%;background:rgba(0,229,160,.3);border-radius:4px 4px 0 0;height:65%;border:1px dashed var(--acc)"></div>
+              <div style="font-size:.65rem;color:var(--acc)">Jan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TICKETS -->
+      <div class="admin-page admin-content" id="admin-tickets">
+        <div style="margin-bottom:1.5rem"><h2 style="font-family:'Clash Display',sans-serif;font-weight:700">Support Tickets</h2></div>
+        <div class="admin-table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Subject</th><th>User</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--txt3)">#T-45</td><td>Download link not working</td><td>Rahul Kumar</td><td><span class="status-chip status-pending">Open</span></td><td style="color:var(--txt3)">Jan 15</td><td><button class="btn btn-sm btn-primary">Reply</button></td></tr>
+              <tr><td style="color:var(--txt3)">#T-44</td><td>Refund request for order CX-1080</td><td>Priya Sharma</td><td><span class="status-chip status-pending">Open</span></td><td style="color:var(--txt3)">Jan 14</td><td><button class="btn btn-sm btn-primary">Reply</button></td></tr>
+              <tr><td style="color:var(--txt3)">#T-43</td><td>Course content query</td><td>Amit Verma</td><td><span class="status-chip status-completed">Closed</span></td><td style="color:var(--txt3)">Jan 10</td><td><button class="btn btn-sm btn-secondary">View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FAQ MANAGEMENT -->
+      <div class="admin-page admin-content" id="admin-faq-mgmt">
+        <div style="margin-bottom:1.5rem"><h2 style="font-family:'Clash Display',sans-serif;font-weight:700">FAQ Management</h2></div>
+        <div class="admin-form-section">
+          <div class="admin-form-title">Add FAQ</div>
+          <div class="form-group"><label class="form-label">Question</label><input class="form-input" placeholder="Enter question..."></div>
+          <div class="form-group"><label class="form-label">Answer</label><textarea class="form-input" rows="3" placeholder="Enter answer..."></textarea></div>
+          <button class="btn btn-primary btn-sm" onclick="showToast('FAQ added!','success')">Add FAQ</button>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="admin-page admin-content" id="admin-settings">
+        <div style="margin-bottom:1.5rem"><h2 style="font-family:'Clash Display',sans-serif;font-weight:700">Settings</h2></div>
+        <div class="admin-form-section">
+          <div class="admin-form-title">💳 Payment Gateway API Keys</div>
+          <div class="form-group"><label class="form-label">Razorpay Key ID</label><input class="form-input" type="text" placeholder="rzp_live_xxxxxxxxxxxxxxxx"></div>
+          <div class="form-group"><label class="form-label">Razorpay Key Secret</label><input class="form-input" type="password" placeholder="••••••••••••••••••••"></div>
+          <div class="form-group"><label class="form-label">Stripe Publishable Key</label><input class="form-input" type="text" placeholder="pk_live_xxxxxxxxxxxxxxxx"></div>
+          <div class="form-group"><label class="form-label">PayPal Client ID</label><input class="form-input" type="text" placeholder="PayPal Client ID"></div>
+          <button class="btn btn-primary btn-sm" onclick="showToast('API keys saved!','success')">Save Keys</button>
+        </div>
+        <div class="admin-form-section">
+          <div class="admin-form-title">🏷️ Tax Settings</div>
+          <div class="admin-grid-2">
+            <div class="form-group"><label class="form-label">GST (%)</label><input class="form-input" type="number" value="18"></div>
+            <div class="form-group"><label class="form-label">Currency</label><select class="form-input"><option>INR (₹)</option><option>USD ($)</option><option>EUR (€)</option></select></div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Tax settings saved!','success')">Save Tax Settings</button>
+        </div>
+        <div class="admin-form-section">
+          <div class="admin-form-title">🎨 Branding</div>
+          <div class="form-group"><label class="form-label">Website Name</label><input class="form-input" value="CompareX"></div>
+          <div class="form-group"><label class="form-label">Footer Text</label><input class="form-input" value="© 2025 CompareX. Compare Prices. Save Money."></div>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Branding saved!','success')">Save Branding</button>
+        </div>
+        <div class="admin-form-section">
+          <div class="admin-form-title">📧 Email Notifications</div>
+          <div style="display:flex;flex-direction:column;gap:.75rem;font-size:.88rem">
+            <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+              <input type="checkbox" checked style="accent-color:var(--acc);width:16px;height:16px"> Order confirmation email
+            </label>
+            <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+              <input type="checkbox" checked style="accent-color:var(--acc);width:16px;height:16px"> Failed payment alert
+            </label>
+            <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+              <input type="checkbox" style="accent-color:var(--acc);width:16px;height:16px"> Refund processed
+            </label>
+            <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+              <input type="checkbox" checked style="accent-color:var(--acc);width:16px;height:16px"> New user registration
+            </label>
+          </div>
+          <button class="btn btn-primary btn-sm mt-2" onclick="showToast('Email settings saved!','success')">Save Email Settings</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ==================== DATA ====================
+const PRODUCTS=[
+  {id:1,name:'React Complete Course 2025',cat:'Course',emoji:'⚛️',price:2499,original:5999,discount:58,rating:4.8,reviews:2341,desc:'Master React from scratch. Hooks, Redux, Next.js, TypeScript, and real projects.',features:['12 hours of video content','Lifetime access','Certificate included','Source code included','Discord community access'],seller:'TechLearn Pro'},
+  {id:2,name:'UI Design System Pro',cat:'Template',emoji:'🎨',price:799,original:1999,discount:60,rating:4.7,reviews:892,desc:'Complete design system with 500+ components, ready for Figma and Webflow.',features:['500+ UI Components','Figma source files','Webflow ready','Dark & Light mode','Free updates'],seller:'DesignCraft'},
+  {id:3,name:'Python Bootcamp 2025',cat:'Course',emoji:'🐍',price:1999,original:4499,discount:56,rating:4.9,reviews:5621,desc:'Zero to hero in Python. Data science, automation, web scraping, and more.',features:['20+ hours content','100+ exercises','Certificate','Jupyter notebooks','AI/ML modules'],seller:'CodeMaster'},
+  {id:4,name:'SEO Masterclass',cat:'Course',emoji:'🔍',price:1299,original:2999,discount:57,rating:4.6,reviews:743,desc:'Rank #1 on Google. Complete SEO guide with proven strategies.',features:['8 hours of video','Keyword research tools','Link building guide','Monthly updates','Case studies'],seller:'SEO Guru'},
+  {id:5,name:'WordPress Pro Plugin Bundle',cat:'Plugin',emoji:'⚡',price:499,original:1499,discount:67,rating:4.5,reviews:234,desc:'20 premium WordPress plugins in one bundle. Speed, SEO, security and more.',features:['20 plugins','1 year updates','Unlimited sites','Priority support','Documentation'],seller:'WPTools'},
+  {id:6,name:'Digital Marketing Guide',cat:'eBook',emoji:'📈',price:299,original:699,discount:57,rating:4.4,reviews:412,desc:'Complete digital marketing handbook. Social media, email, and paid ads.',features:['180+ pages','Checklists included','Templates provided','Lifetime access','PDF format'],seller:'MarketPro'},
+  {id:7,name:'Notion Business Templates',cat:'Template',emoji:'📋',price:349,original:999,discount:65,rating:4.8,reviews:1267,desc:'50+ Notion templates for projects, goals, CRM, and business management.',features:['50+ templates','Lifetime updates','Video walkthroughs','Community access','Bonus templates'],seller:'NotionNinja'},
+  {id:8,name:'Flutter Mobile Dev Course',cat:'Course',emoji:'📱',price:2299,original:5499,discount:58,rating:4.7,reviews:876,desc:'Build beautiful cross-platform apps with Flutter and Dart.',features:['18 hours content','5 real apps built','iOS & Android','Firebase integration','Certificate'],seller:'MobileDev Pro'},
+];
+
+const TESTIMONIALS=[
+  {name:'Sneha Patel',role:'Web Developer',avatar:'SP',color:'#00e5a0',text:'Saved ₹3,000 on my first purchase! The React course is absolutely worth it. CompareX showed me the best deal instantly.'},
+  {name:'Dev Singh',role:'Entrepreneur',avatar:'DS',color:'#5b6cff',text:'Best platform to buy digital products. Clean UI, instant download, and 24/7 support. Highly recommend!'},
+  {name:'Ananya Iyer',role:'UI Designer',avatar:'AI',color:'#ff4d6d',text:'The UI Design Kit saved me weeks of work. Found it on CompareX at 60% off. Amazing experience!'},
+  {name:'Rohan Mehta',role:'Student',avatar:'RM',color:'#fbbf24',text:'As a student, price comparison matters a lot. CompareX helped me get the Python course at the best possible price.'},
+];
+
+const FAQS=[
+  {q:'How do I download my purchased products?',a:'After payment, go to My Orders page. Your download link will be available immediately and is valid for lifetime access.'},
+  {q:'What payment methods do you accept?',a:'We accept all major payment methods via Razorpay (UPI, Cards, Net Banking), Stripe (International Cards), and PayPal.'},
+  {q:'Can I get a refund?',a:'Yes! We offer a 7-day money-back guarantee on all products. Contact support with your order ID to initiate a refund.'},
+  {q:'Are the products legitimate and legal?',a:'Absolutely. All products are sourced from verified sellers. We verify authenticity before listing any product.'},
+  {q:'How does coupon discounting work?',a:'Enter your coupon code at checkout. Discounts are applied instantly. Check our social media for latest codes.'},
+];
+
+const ORDERS=[
+  {id:'#CX-1089',date:'Jan 15, 2025',product:{name:'React Complete Course 2025',emoji:'⚛️',cat:'Course',price:2499},status:'completed'},
+  {id:'#CX-1072',date:'Dec 28, 2024',product:{name:'UI Design System Pro',emoji:'🎨',cat:'Template',price:799},status:'completed'},
+  {id:'#CX-1054',date:'Dec 10, 2024',product:{name:'Notion Business Templates',emoji:'📋',cat:'Template',price:349},status:'completed'},
+];
+
+// ==================== STATE ====================
+let cart=[];
+let currentCatFilter='';
+let couponDiscount=0;
+let currentProductId=1;
+
+// ==================== NAVIGATION ====================
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+page);
+  if(el){el.classList.add('active');window.scrollTo(0,0);}
+
+  // Bottom nav active
+  const bnMap={home:'bn-home',products:'bn-products',cart:'bn-cart',profile:'bn-profile'};
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  if(bnMap[page]){document.getElementById(bnMap[page])?.classList.add('active');}
+
+  // Desktop nav active
+  document.querySelectorAll('.d-nav-links a').forEach(a=>a.classList.remove('active'));
+  const da=document.getElementById('dnav-'+page);
+  if(da)da.classList.add('active');
+
+  // Page-specific init
+  if(page==='home'){renderFeatured();renderTestimonials();renderFAQ();}
+  if(page==='products'){renderProducts();}
+  if(page==='cart'){renderCart();}
+  if(page==='checkout'){renderCheckoutSummary();}
+  if(page==='orders'){renderOrders();}
+  if(page==='admin'){initAdmin();}
+}
+
+// ==================== THEME ====================
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  const icon=next==='dark'?'light_mode':'dark_mode';
+  document.getElementById('themeIcon').textContent=icon;
+  document.getElementById('mThemeIcon').textContent=icon;
+  document.getElementById('adminThemeIcon').textContent=icon;
+}
+
+// ==================== TOAST ====================
+function showToast(msg,type='info'){
+  const icons={success:'check_circle',error:'error',info:'info'};
+  const colors={success:'var(--acc)',error:'var(--acc2)',info:'var(--acc3)'};
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span class="material-icons-round" style="color:${colors[type]};font-size:18px">${icons[type]}</span>${msg}`;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(()=>{t.style.animation='slideOut .3s ease forwards';setTimeout(()=>t.remove(),300)},3000);
+}
+
+// ==================== CART ====================
+function addToCart(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(!p)return;
+  const exists=cart.find(x=>x.id===id);
+  if(exists){showToast('Already in cart!','info');return;}
+  cart.push({...p,qty:1});
+  updateCartBadge();
+  showToast(`${p.name.substring(0,30)}... added to cart!`,'success');
+}
+function removeFromCart(id){
+  cart=cart.filter(x=>x.id!==id);
+  updateCartBadge();
+  renderCart();
+  showToast('Removed from cart','info');
+}
+function updateCartBadge(){
+  const n=cart.length;
+  document.getElementById('cartBadgeD').textContent=n;
+  document.getElementById('cartBadgeM').textContent=n;
+}
+function getCartTotal(){return cart.reduce((s,p)=>s+p.price,0);}
+
+// ==================== RENDER: FEATURED ====================
+function renderFeatured(){
+  const el=document.getElementById('featuredProducts');
+  if(!el||el.childElementCount>0)return;
+  el.innerHTML=PRODUCTS.slice(0,6).map(p=>`
+    <div class="product-card" onclick="openProduct(${p.id})">
+      <div class="product-thumb">${p.emoji}<div class="product-discount">-${p.discount}%</div></div>
+      <div class="product-info">
+        <div class="product-category">${p.cat}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">
+          <span class="price-current">₹${p.price.toLocaleString()}</span>
+          <span class="price-original">₹${p.original.toLocaleString()}</span>
+        </div>
+        <div class="product-rating"><span class="stars">★★★★★</span> ${p.rating} (${p.reviews.toLocaleString()})</div>
+      </div>
+    </div>`).join('');
+}
+
+// ==================== RENDER: TESTIMONIALS ====================
+function renderTestimonials(){
+  const el=document.getElementById('testimonials');
+  if(!el||el.childElementCount>0)return;
+  el.innerHTML=TESTIMONIALS.map(t=>`
+    <div class="testimonial-card">
+      <div class="stars" style="margin-bottom:.5rem;font-size:.9rem">★★★★★</div>
+      <div class="testimonial-text">"${t.text}"</div>
+      <div class="testimonial-author">
+        <div class="avatar" style="background:${t.color}22;color:${t.color}">${t.avatar}</div>
+        <div><div class="avatar-name">${t.name}</div><div class="avatar-role">${t.role}</div></div>
+      </div>
+    </div>`).join('');
+}
+
+// ==================== RENDER: FAQ ====================
+function renderFAQ(){
+  const el=document.getElementById('faqList');
+  if(!el||el.childElementCount>0)return;
+  el.innerHTML=FAQS.map((f,i)=>`
+    <div class="faq-item" id="faq-${i}">
+      <div class="faq-q" onclick="toggleFAQ(${i})">
+        <span>${f.q}</span>
+        <span class="material-icons-round">expand_more</span>
+      </div>
+      <div class="faq-a">${f.a}</div>
+    </div>`).join('');
+}
+function toggleFAQ(i){
+  const el=document.getElementById(`faq-${i}`);
+  const isOpen=el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(x=>x.classList.remove('open'));
+  if(!isOpen)el.classList.add('open');
+}
+
+// ==================== RENDER: PRODUCTS ====================
+function setCatFilter(el,cat){
+  currentCatFilter=cat;
+  document.querySelectorAll('#categoryFilters .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  filterProducts();
+}
+function filterCategory(el,cat){setCatFilter(el,cat);}
+function filterProducts(){
+  const q=document.getElementById('productSearch')?.value.toLowerCase()||'';
+  const filtered=PRODUCTS.filter(p=>{
+    const matchQ=!q||p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q);
+    const matchC=!currentCatFilter||p.cat===currentCatFilter;
+    return matchQ&&matchC;
+  });
+  renderProductGrid(filtered);
+}
+function renderProducts(){
+  currentCatFilter='';
+  document.querySelectorAll('#categoryFilters .filter-chip').forEach((c,i)=>c.classList.toggle('active',i===0));
+  renderProductGrid(PRODUCTS);
+}
+function renderProductGrid(list){
+  const el=document.getElementById('productsGrid');
+  if(!el)return;
+  if(!list.length){el.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">No products found</div><div class="empty-sub">Try a different search or category</div></div>`;return;}
+  el.innerHTML=list.map(p=>`
+    <div class="product-card" onclick="openProduct(${p.id})">
+      <div class="product-thumb" style="height:130px;font-size:2.8rem">${p.emoji}<div class="product-discount">-${p.discount}%</div></div>
+      <div class="product-info">
+        <div class="product-category">${p.cat}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">
+          <span class="price-current">₹${p.price.toLocaleString()}</span>
+          <span class="price-original">₹${p.original.toLocaleString()}</span>
+        </div>
+        <div class="product-rating"><span class="stars" style="font-size:.8rem">★★★★</span> ${p.rating}</div>
+        <div class="product-card-actions">
+          <button class="btn btn-primary" onclick="event.stopPropagation();addToCart(${p.id})">
+            <span class="material-icons-round" style="font-size:14px">add_shopping_cart</span>Cart
+          </button>
+          <button class="btn btn-secondary" onclick="event.stopPropagation();openProduct(${p.id})">View</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ==================== PRODUCT DETAIL ====================
+function openProduct(id){
+  currentProductId=id;
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(!p)return;
+  const related=PRODUCTS.filter(x=>x.id!==id&&x.cat===p.cat).slice(0,4);
+  document.getElementById('productDetailContent').innerHTML=`
+    <div class="product-detail-layout" style="padding:1.25rem">
+      <div class="product-detail-hero" style="font-size:5rem;border-radius:var(--radius);border:1px solid var(--bdr)">${p.emoji}</div>
+      <div class="product-detail-info">
+        <div class="product-category mt-1">${p.cat}</div>
+        <h1 class="product-detail-title">${p.name}</h1>
+        <div class="product-detail-meta">
+          <div class="product-rating"><span class="stars">★★★★★</span> <strong>${p.rating}</strong> (${p.reviews.toLocaleString()} reviews)</div>
+          <div class="chip chip-green">Instant Download</div>
+        </div>
+        <div class="product-price mt-1">
+          <span class="price-current" style="font-size:1.75rem">₹${p.price.toLocaleString()}</span>
+          <span class="price-original" style="font-size:.95rem">₹${p.original.toLocaleString()}</span>
+          <span class="chip chip-red">-${p.discount}% OFF</span>
+        </div>
+        <p style="font-size:.88rem;color:var(--txt2);line-height:1.7;margin-top:1rem;font-weight:300">${p.desc}</p>
+        <div class="feature-list">
+          ${p.features.map(f=>`<div class="feature-item"><span class="material-icons-round">check_circle</span>${f}</div>`).join('')}
+        </div>
+        <div style="display:flex;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap">
+          <button class="btn btn-primary btn-lg" style="flex:1" onclick="addToCart(${p.id});showPage('cart')">
+            <span class="material-icons-round">bolt</span>Buy Now
+          </button>
+          <button class="btn btn-secondary" onclick="addToCart(${p.id})">
+            <span class="material-icons-round" style="font-size:16px">add_shopping_cart</span>
+          </button>
+        </div>
+        <p style="font-size:.72rem;color:var(--txt3);margin-top:.5rem;text-align:center">🔒 Secure payment · 7-day refund policy · Instant access</p>
+      </div>
+    </div>
+    <div class="separator"></div>
+    <div style="padding:1.25rem"><div style="font-family:'Clash Display',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1rem">Related Products</div></div>
+    <div class="related-scroll">
+      ${related.map(r=>`<div class="product-card" onclick="openProduct(${r.id})" style="min-width:180px">
+        <div class="product-thumb" style="height:100px;font-size:2.5rem">${r.emoji}</div>
+        <div class="product-info">
+          <div class="product-name" style="font-size:.8rem">${r.name}</div>
+          <div class="price-current">₹${r.price.toLocaleString()}</div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div style="height:2rem"></div>`;
+  showPage('product-detail');
+}
+
+// ==================== CART ====================
+function renderCart(){
+  const el=document.getElementById('cartContent');
+  if(!el)return;
+  if(!cart.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-title">Your cart is empty</div><div class="empty-sub">Explore products and add them to cart</div><button class="btn btn-primary mt-2" onclick="showPage('products')">Explore Products</button></div>`;
+    return;
+  }
+  const total=getCartTotal();
+  el.innerHTML=`
+    ${cart.map(p=>`
+      <div class="cart-item">
+        <div class="cart-thumb">${p.emoji}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${p.name}</div>
+          <div class="cart-item-cat">${p.cat}</div>
+          <div class="cart-item-price">₹${p.price.toLocaleString()}</div>
+        </div>
+        <button class="cart-item-remove" onclick="removeFromCart(${p.id})">
+          <span class="material-icons-round">delete_outline</span>
+        </button>
+      </div>`).join('')}
+    <div class="cart-summary">
+      <div class="summary-row"><span>Subtotal</span><span>₹${total.toLocaleString()}</span></div>
+      <div class="summary-row"><span>Discount</span><span style="color:var(--acc)">-₹${couponDiscount}</span></div>
+      <div class="summary-row"><span>GST (18%)</span><span>₹${Math.round(total*0.18).toLocaleString()}</span></div>
+      <div class="summary-row"><span>Total</span><span>₹${(total-couponDiscount+Math.round(total*0.18)).toLocaleString()}</span></div>
+    </div>
+    <div class="coupon-input">
+      <input id="cartCoupon" placeholder="Coupon code" value="">
+      <button class="btn btn-outline" onclick="applyCouponCart()">Apply</button>
+    </div>
+    <div class="cart-checkout-btn">
+      <button class="btn btn-primary btn-full btn-lg" onclick="showPage('checkout')">
+        Proceed to Checkout <span class="material-icons-round" style="font-size:18px">arrow_forward</span>
+      </button>
+    </div>`;
+}
+
+// ==================== CHECKOUT ====================
+function applyCoupon(){
+  const v=document.getElementById('couponInput').value.toUpperCase();
+  const codes={SAVE20:20,FLAT100:100,NEWUSER:30};
+  if(codes[v]){
+    couponDiscount=codes[v];
+    document.getElementById('couponMsg').innerHTML=`<span style="color:var(--acc)">✓ Coupon applied! You save ₹${couponDiscount}</span>`;
+  }else{
+    document.getElementById('couponMsg').innerHTML=`<span style="color:var(--acc2)">Invalid coupon code</span>`;
+  }
+}
+function applyCouponCart(){
+  const v=document.getElementById('cartCoupon').value.toUpperCase();
+  const codes={SAVE20:20,FLAT100:100,NEWUSER:30};
+  if(codes[v]){couponDiscount=codes[v];showToast(`Coupon applied! Save ₹${couponDiscount}`,'success');renderCart();}
+  else{showToast('Invalid coupon code','error');}
+}
+function selectPayment(el){
+  document.querySelectorAll('.payment-method').forEach(m=>m.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function renderCheckoutSummary(){
+  const el=document.getElementById('checkoutSummary');
+  if(!el)return;
+  const total=getCartTotal();
+  el.innerHTML=`
+    ${cart.map(p=>`<div class="summary-row"><span style="display:flex;align-items:center;gap:.5rem">${p.emoji} ${p.name.substring(0,30)}...</span><span>₹${p.price.toLocaleString()}</span></div>`).join('')}
+    <div class="summary-row"><span>GST (18%)</span><span>₹${Math.round(total*0.18).toLocaleString()}</span></div>
+    <div class="summary-row" style="font-size:1.1rem"><span>Total</span><span style="color:var(--acc)">₹${(total-couponDiscount+Math.round(total*0.18)).toLocaleString()}</span></div>`;
+}
+function placeOrder(){
+  if(!cart.length){showToast('Your cart is empty!','error');return;}
+  cart=[];
+  updateCartBadge();
+  couponDiscount=0;
+  showToast('🎉 Order placed! Check your email for download links.','success');
+  showPage('orders');
+}
+
+// ==================== ORDERS ====================
+function renderOrders(){
+  const el=document.getElementById('ordersList');
+  if(!el)return;
+  el.innerHTML=ORDERS.map(o=>`
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div style="font-weight:700;font-size:.88rem">${o.id}</div>
+          <div class="order-date">${o.date}</div>
+        </div>
+        <span class="status-chip status-completed">Completed</span>
+      </div>
+      <div class="order-body">
+        <div class="order-product">
+          <div class="order-thumb">${o.product.emoji}</div>
+          <div>
+            <div class="order-product-name">${o.product.name}</div>
+            <div class="order-product-price">${o.product.cat} · ₹${o.product.price.toLocaleString()}</div>
+          </div>
+        </div>
+      </div>
+      <div class="order-footer">
+        <button class="btn btn-primary btn-sm" onclick="showToast('Download started!','success')">
+          <span class="material-icons-round" style="font-size:14px">download</span>Download
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="showToast('Invoice downloading...','info')">
+          <span class="material-icons-round" style="font-size:14px">receipt</span>Invoice
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+// ==================== AUTH ====================
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value;
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass){showToast('Please fill all fields','error');return;}
+  try {
+    const res = await API.auth.login(email, pass);
+    localStorage.setItem('token', res.token);
+    showToast('Welcome back! 👋','success');
+    showPage('home');
+  } catch (err) {
+    showToast('Login failed: ' + err.message, 'error');
+  }
+}
+async function doSignup(){
+  const name=document.getElementById('signupName').value;
+  const email=document.getElementById('signupEmail').value;
+  const pass=document.getElementById('signupPass').value;
+  if(!name||!email||!pass){showToast('Please fill all fields','error');return;}
+  if(pass.length<8){showToast('Password must be 8+ characters','error');return;}
+  try {
+    const res = await API.auth.signup(name, email, pass);
+    localStorage.setItem('token', res.token);
+    showToast('Account created! Welcome to CompareX 🎉','success');
+    showPage('home');
+  } catch (err) {
+    showToast('Signup failed: ' + err.message, 'error');
+  }
+}
+function togglePassword(id,btn){
+  const inp=document.getElementById(id);
+  const isText=inp.type==='text';
+  inp.type=isText?'password':'text';
+  btn.querySelector('.material-icons-round').textContent=isText?'visibility':'visibility_off';
+}
+
+// ==================== ADMIN ====================
+function initAdmin(){
+  renderAdminProducts();
+}
+function showAdminPage(page,navEl){
+  document.querySelectorAll('.admin-page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('admin-'+page);
+  if(el){el.classList.add('active');}
+  const titles={dashboard:'Dashboard','products-mgmt':'Products','add-product':'Add Product',
+    'orders-mgmt':'Orders',users:'Users',coupons:'Coupons',reports:'Reports & Analytics',
+    tickets:'Support Tickets','faq-mgmt':'FAQ Management',settings:'Settings'};
+  document.getElementById('adminPageTitle').textContent=titles[page]||page;
+  if(navEl){
+    document.querySelectorAll('.admin-nav-item').forEach(n=>n.classList.remove('active'));
+    navEl.classList.add('active');
+  }
+  document.getElementById('adminSidebar').classList.remove('open');
+}
+function renderAdminProducts(){
+  const el=document.getElementById('adminProductTable');
+  if(!el||el.childElementCount>0)return;
+  el.innerHTML=PRODUCTS.map(p=>`
+    <tr>
+      <td style="display:flex;align-items:center;gap:.75rem"><span style="font-size:1.5rem">${p.emoji}</span><span style="font-weight:600">${p.name}</span></td>
+      <td><span class="chip chip-blue">${p.cat}</span></td>
+      <td style="color:var(--acc);font-weight:600">₹${p.price.toLocaleString()}</td>
+      <td style="color:var(--txt2)">${Math.floor(Math.random()*100)+10}</td>
+      <td><span class="status-chip status-completed">Active</span></td>
+      <td>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-sm btn-secondary" onclick="showAdminPage('add-product')">Edit</button>
+          <button class="btn btn-sm" style="background:rgba(255,77,109,.1);color:var(--acc2);border:1px solid rgba(255,77,109,.2)" onclick="showToast('Product deleted','error')">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+// ==================== INIT ====================
+const res = await API.auth.login("node utils/seeder.jsx@gmail.com", "123456");
+localStorage.setItem("token", res.token);
+const token = localStorage.getItem("token");
+await API.cart.add("product_id", token);
+const order = await API.orders.create("razorpay", token);
+
+API.payment.initRazorpay(
+  order.order._id,
+  (res) => {
+    alert("Payment Success");
+  },
+  () => {
+    alert("Payment Failed");
+  }
+);
+const adminRes = await API.admin.login("admin@comparex.com", "Admin@2025");
+localStorage.setItem("adminToken", adminRes.token);
+const token = localStorage.getItem("adminToken");
+await API.admin.addProduct(
+  {
+    title: "iPhone 15",
+    price: 70000,
+    category: "Mobile",
+    description: "Latest iPhone",
+  },
+  token
+);
+await API.admin.createCoupon(
+  {
+    code: "SAVE20",
+    discountType: "percentage",
+    discountValue: 20,
+  },
+  token
+);
+await API.admin.deleteProduct(productId, token);
+const data = await API.admin.getDashboard(token);
+console.log(data);
+showPage('home');
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</body>
+</html>
